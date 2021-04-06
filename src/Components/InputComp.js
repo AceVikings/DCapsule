@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Input, Text } from "@chakra-ui/react";
+import { Input, Text, Image, Center } from "@chakra-ui/react";
 import ipfs from "../ipfs";
 import getWeb3 from "../web3";
 
@@ -9,6 +9,8 @@ const InputComp = () => {
   const [buffer, setBuffer] = useState(null);
 
   const [account, setAccount] = useState(null);
+
+  const [previewImg,setPreviewImg] = useState("QmVheGWgmEbmANUbaQ6xKRajsfGD9WfmzvFpaid4QqEVT8");
 
   useEffect(() => {
     blockchainInfo();
@@ -36,17 +38,25 @@ const InputComp = () => {
     console.log('submitting form')
     console.log(buffer);
     const {cid} = await ipfs.add(buffer)
-    console.log(cid);
+    const imageHash = cid;
+    setPreviewImg(imageHash.string);
     };
   
 
   return (
     <div>
-      <Text fontSize='xl'>Hi {account}</Text>
+      <Text p={5} fontSize='xl'>Hi {account}</Text>
+      <Center>
+      <Image
+      p={10}
+      boxSize="400px"
+      objectFit="cover"
+       src={`https://ipfs.infura.io/ipfs/${previewImg}`}/>
       <form onSubmit={onSubmit}>
         <Input type="file" onChange={captureFile} />
         <Input type="submit" />
       </form>
+      </Center>
     </div>
   );
 };
