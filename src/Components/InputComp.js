@@ -1,42 +1,54 @@
-import {useState} from 'react'
-import {Input} from '@chakra-ui/react'
-import ipfs from '../ipfs'
+import { useState, useEffect } from "react";
+import { Input, Text } from "@chakra-ui/react";
+import ipfs from "../ipfs";
+import getWeb3 from "../web3";
 
 const InputComp = () => {
-    let reader;
+  let reader;
+  
+  const [buffer, setBuffer] = useState(null);
 
-    const [buffer,setBuffer] = useState(null);
-    
-    
-    const captureFile = (event) => {
-        event.preventDefault()
-        const file = event.target.files[0];
-        reader = new window.FileReader();
-        reader.readAsArrayBuffer(file);
-        reader.onloadend = () => {
-            setBuffer(Buffer(reader.result));
-        }
-        
-        
-    }
+  const [account, setAccount] = useState(null);
 
-    const onSubmit = (event) => {
-        event.preventDefault();
-        ipfs.add(data,()=>{
-            //Do stuff here
-        })
-    }
-    
-    return (
-        <div>
-            <form onSubmit={onSubmit}>
-            <Input type='file' onChange={captureFile}/>
-            <Input type='submit'/>
-            </form>
-        </div>
-    )
-}
+  useEffect(() => {
+    blockchainInfo();
+  }, []);
 
+  
+  const blockchainInfo = async () => {
+    const web3 = await getWeb3();
+    const accounts = await web3.eth.getAccounts();
+    setAccount(accounts[0]);
+  };
 
+  const captureFile = async (event) => {
+    event.preventDefault();
+    const file = event.target.files[0];
+    reader = new window.FileReader();
+    reader.readAsArrayBuffer(file);
+    reader.onloadend = () => {
+      setBuffer(Buffer(reader.result));
+    };
+  };
+  //cid : QmVheGWgmEbmANUbaQ6xKRajsfGD9WfmzvFpaid4QqEVT8
+  const onSubmit = async (event) => {
+    event.preventDefault();
+    console.log('submitting form')
+    console.log(buffer);
+    const {cid} = await ipfs.add(buffer)
+    console.log(cid);
+    };
+  
 
-export default InputComp
+  return (
+    <div>
+      <Text fontSize='xl'>Hi {account}</Text>
+      <form onSubmit={onSubmit}>
+        <Input type="file" onChange={captureFile} />
+        <Input type="submit" />
+      </form>
+    </div>
+  );
+};
+
+export default InputComp;
