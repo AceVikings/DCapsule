@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Input, Text, Image, Center } from "@chakra-ui/react";
 import ipfs from "../ipfs";
 import getWeb3 from "../web3";
-
+import contractAbi from "../abis/abis.json"
 const InputComp = () => {
   let reader;
   
@@ -21,6 +21,19 @@ const InputComp = () => {
     const web3 = await getWeb3();
     const accounts = await web3.eth.getAccounts();
     setAccount(accounts[0]);
+
+    const networkId = await web3.eth.net.getId()
+    if(networkId == '80001'){
+      console.log(networkId)
+      console.log(contractAbi)
+      const abi = []
+      const address = ''
+      //const myContract = new web3.eth.Contract(abi,address)
+    }
+    else{
+      window.alert('Please switch to matic network')
+    }
+    
   };
 
   const captureFile = async (event) => {
